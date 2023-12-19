@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 from PIL import Image, ImageDraw
-from landmark_detection.landmark_detection import LandmakDetector
+from face_processes.landmark_detection import LandmakDetector
 from face_align import FaceAlign
 
 class FaceComponentsExtractor(object):

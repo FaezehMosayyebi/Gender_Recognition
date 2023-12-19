@@ -28,10 +28,8 @@ class FaceDetection(object):
       (x, y, x1, y1) = box.astype("int")
 
       if y<= image.shape[0] and y1<= image.shape[0] and x<= image.shape[1] and x1<=image.shape[1]:
-        a=1
         rect = dlib.rectangle(left=x, top=y, right=x1, bottom=y1)
       else:
-        a=0
         rect = dlib.rectangle(left=0, top=0, right=0, bottom=0)
 
-    return (rect, a)
+    return rect

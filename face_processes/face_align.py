@@ -1,7 +1,7 @@
 from numpy import np
 from PIL import Image
-from face_detection.face_detection import FaceDetection
-from landmark_detection.landmark_detection import LandmakDetector
+from face_processes.face_detection import FaceDetection
+from face_processes.landmark_detection import LandmakDetector
 
 class FaceAlign(object):
   def __init__(self, detect_face=True) -> None:
