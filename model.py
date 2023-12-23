@@ -4,8 +4,9 @@ from tensorflow.keras.applications import EfficientNetB1
 from tensorflow.keras import regularizers
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
 
-class trainer():
+class Trainer():
     def __init__(self, train_data_dir, validation_data_dir, batch_size, img_size) -> None:
 
         self.train_dir = train_data_dir
@@ -14,7 +15,7 @@ class trainer():
         self.batch_size = batch_size
         self.img_size = img_size
 
-    def data_loader(self):
+    def load_data(self):
         try:
             self.train_dataset = image_dataset_from_directory(self.train_dir,
                                                 label_mode="categorical",
@@ -57,17 +58,17 @@ class trainer():
 
         return data_augmentation
     
-    def augment_plotter(self):
+    def augment_plotter(self, aug_config):
         for image, _ in self.train_dataset.take(1):
             plt.figure(figsize=(10, 10))
             first_image = image[0]
             for i in range(9):
                 ax = plt.subplot(3, 3, i + 1)
-                augmented_image = self.data_augmentation(self, rotation_factor, translation_factor, flip, contrast_factor)(tf.expand_dims(first_image, 0))
+                augmented_image = self.data_augmentation(aug_config['rotation_factor'], aug_config['translation_factor'], aug_config['flip'], aug_config['contrast_factor'])(tf.expand_dims(first_image, 0))
                 plt.imshow(augmented_image[0] / 255)
                 plt.axis('off')
 
-    def model(self, model_size):
+    def model(self, model_size, aug_config):
 
         self.base_model = tf.keras.applications.EfficientNetB1(
             include_top=False,
@@ -76,7 +77,7 @@ class trainer():
 
         self.base_model.trainable = False
 
-        da = self.data_augmentation(rotation_factor, translation_factor, flip, contrast_factor)
+        da = self.data_augmentation(aug_config['rotation_factor'], aug_config['translation_factor'], aug_config['flip'], aug_config['contrast_factor'])
         preprocess_input = tf.keras.applications.efficientnet.preprocess_input
 
 
@@ -119,7 +120,7 @@ class trainer():
                     epochs=self.train_num_epochs,
                     validation_data=self.validation_dataset)
         
-        return self.train_history
+        return self.train_history, self.model
     
     def fine_tune(self, tune_from, num_epochs):
 
@@ -140,9 +141,9 @@ class trainer():
                          initial_epoch=self.train_history.epoch[-1],
                          validation_data=self.validation_dataset)
         
-        return self.history_fine
+        return self.history_fine, self.model
 
-    def train_process_plotter(self):
+    def plot_train_process(self, save_to_dir):
 
         acc = self.train_history.history['accuracy']
         val_acc = self.train_history.history['val_accuracy']
@@ -168,9 +169,10 @@ class trainer():
         plt.title('Training and Validation Loss')
         plt.xlabel('epoch')
         plt.show()
-        plt.savefig('train_plots.png')
+        if save_to_dir is not None:
+            plt.savefig(os.path.join(save_to_dir, 'train_plots.png'))
 
-    def whole_process_plotter(self):
+    def plot_whole_process(self, save_to_dir):
         acc = self.train_history.history['accuracy'] + self.history_fine.history['accuracy']
         val_acc = self.train_history.history['val_accuracy'] + self.history_fine.history['val_accuracy']
 
@@ -197,9 +199,11 @@ class trainer():
         plt.title('Training and Validation Loss')
         plt.xlabel('epoch')
         plt.show()
+        if save_to_dir is not None:
+            plt.savefig(os.path.join(save_to_dir, 'whol_process_plots.png'))
 
     def save_model(self, dir):
-        self.model.save(dir + '/genderdetector.h5')
+        self.model.save(os.path.join(dir, 'genderdetector.h5'))
 
     def save_history(self, history, dir):
 
@@ -207,6 +211,5 @@ class trainer():
         hist_df = pd.DataFrame(history.history)
 
         # save to csv:
-        hist_csv_file = dir + '/history_fine.csv'
-        with open(hist_csv_file, mode='w') as f:
+        with open(os.path.join(dir, 'history_fine.csv'), mode='w') as f:
             hist_df.to_csv(f)
