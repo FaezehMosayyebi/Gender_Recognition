@@ -16,6 +16,7 @@ class pipline:
             if model_dir is not None:
                 self.model = tf.keras.models.load_model(model_dir)
 
+
     def train(self, data_dir:dict, model_name:str, batch_size:int, patch_size:(int, int), train_num_epochs:int, tune_num_epochs:int, tune_from:int, lr:float, aug_config:dict, save_to_dir):
 
         trainer = Trainer(data_dir['training'], data_dir['validation'], batch_size, patch_size)
@@ -33,6 +34,7 @@ class pipline:
             if tune_num_epochs is not None:
                 trainer.save_history(tune_history, save_to_dir)
 
+
     def evaluate_model(self, testdata_dir, batch_size, patch_size, confusion_matrix):
 
         evaluator = ModelEval(testdata_dir, batch_size, patch_size, self.model)
@@ -41,12 +43,16 @@ class pipline:
         if confusion_matrix:
             evaluator.confusion_matrix()
         
+
     def run_model(self, img_dir, save_to_dir):
 
         img = cv2.imread(img_dir)
         face = self.face_detector(img)
         for i in range(len(face)):
-            (x, y, x1, y1) = face[i].astype("int")
+            x = face[i].left()
+            y = face[i].top()
+            x1 = face[i].right()
+            y1 = face[i].bottom()
             image = img[y:y1, x:x1]
             image = cv2.resize(image, (224,224))
             image = tf.keras.applications.efficientnet.preprocess_input(image)
@@ -63,4 +69,28 @@ class pipline:
             cv2.imshow(img)
             cv2.waitKey(0)
             if save_to_dir is not None:
-                cv2.imwrite(os.path.join(save_to_dir, 'result'), img)
+                cv2.imwrite(os.path.join(save_to_dir, 'gender_detection_result.png'), img)
+
+    def detect_faces(self, img_dir, save_to_dir):
+
+        """
+            Usage of face detection class
+            Params:
+                img_dir: Diretion of image
+                save_to_dir: if you want to save the result inter your desired location.
+        """
+        
+        img = cv2.inmread(img_dir)
+        rects = self.face_detector(img_dir)
+
+        for i in range(len(rects)):
+            cv2.rectangle(img, (rects[i].left(), rects[i].top()), (rects[i].right(), rects[i].bottom()), (255, 0, 0), 2)
+
+        if save_to_dir is not None:
+            cv2.imwrite(os.path.join(save_to_dir, 'face_detection_result.png'), img)
+
+        cv2.imshow(img)
+        cv2.waitKey(0)
+
+
+
