@@ -1,15 +1,21 @@
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 from mlxtend.plotting import plot_confusion_matrix
-import matplotlib.pyplot as plt
-import numpy as np
+from skimage.io import imread_collection
 
-class model_eval:
+import numpy as np
+import cv2
+
+
+class ModelEval:
     
-    def __init__(self, testdata_dir, batch_size, patch_size, model_dir):
+    def __init__(self, testdata_dir, batch_size, patch_size, model):
 
         self.test_data_dir = testdata_dir
-        self.model_dir = model_dir
+        if type(model) == str:
+            self.model_dir = model
+        else:
+            self.model = model
         self.batch_size = batch_size
         self.patch_size = patch_size
 
@@ -34,7 +40,7 @@ class model_eval:
     def load_model(self):
         self.model = tf.keras.models.load_model(self.model_dir)
 
-    def evaluation(self):
+    def evaluat(self):
         loss, accuracy = self.model.evaluate(self.test_dataset)
 
         print(f'Model evaluated successfully.')

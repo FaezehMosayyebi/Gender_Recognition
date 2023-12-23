@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 from face_processes.face_detection import FaceDetection
 from model import Trainer
+from modelevaluation import ModelEval
 import os
 
 class pipline:
@@ -32,6 +33,13 @@ class pipline:
             if tune_num_epochs is not None:
                 trainer.save_history(tune_history, save_to_dir)
 
+    def evaluate_model(self, testdata_dir, batch_size, patch_size, confusion_matrix):
+
+        evaluator = ModelEval(testdata_dir, batch_size, patch_size, self.model)
+        evaluator.load_data()
+        evaluator.evaluat()
+        if confusion_matrix:
+            evaluator.confusion_matrix()
         
     def run_model(self, img_dir, save_to_dir):
 
