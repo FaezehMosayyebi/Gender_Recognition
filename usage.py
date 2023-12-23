@@ -2,6 +2,7 @@ import cv2
 import tensorflow as tf
 import numpy as np
 from face_processes.face_detection import FaceDetection
+from face_processes.landmark_detection import LandmakDetector
 from model import Trainer
 from modelevaluation import ModelEval
 import os
@@ -79,9 +80,9 @@ class pipline:
                 img_dir: Diretion of image
                 save_to_dir: if you want to save the result inter your desired location.
         """
-        
+
         img = cv2.inmread(img_dir)
-        rects = self.face_detector(img_dir)
+        rects = self.face_detector(img)
 
         for i in range(len(rects)):
             cv2.rectangle(img, (rects[i].left(), rects[i].top()), (rects[i].right(), rects[i].bottom()), (255, 0, 0), 2)
@@ -91,6 +92,24 @@ class pipline:
 
         cv2.imshow(img)
         cv2.waitKey(0)
+
+    def detect_face_landmarks(self, image_dir, save_to_dir, num_landmark):
+
+        landmark_detector = LandmakDetector(num_landmark)
+
+        img = cv2.inmread(image_dir)
+        rects = self.face_detector(img)
+        
+        for i in range(len(rects)):
+            coords = landmark_detector(img, rects(i))
+            
+
+
+
+        pass
+
+    def generate_masked_faces(self):
+        pass
 
 
 
