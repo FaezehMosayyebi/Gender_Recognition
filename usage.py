@@ -3,15 +3,17 @@ import tensorflow as tf
 import numpy as np
 from face_processes.face_detection import FaceDetection
 from model import Trainer
+import os
 
 class pipline:
 
     def __init__(self, model_dir)->None:
         
-        self.model_dir = model_dir
         self.face_detector = FaceDetection()
         if model_dir is not None:
-            self.model = tf.keras.models.load_model(model_dir)
+            self.model_dir = model_dir
+            if model_dir is not None:
+                self.model = tf.keras.models.load_model(model_dir)
 
     def train(self, data_dir:dict, model_name:str, batch_size:int, patch_size:(int, int), train_num_epochs:int, tune_num_epochs:int, tune_from:int, lr:float, aug_config:dict, save_to_dir):
 
@@ -31,11 +33,9 @@ class pipline:
                 trainer.save_history(tune_history, save_to_dir)
 
         
-    def run_model(self, img_dir):
+    def run_model(self, img_dir, save_to_dir):
 
         img = cv2.imread(img_dir)
-        #cv2_imshow(img)
-        #print(img.shape)
         face = self.face_detector(img)
         for i in range(len(face)):
             (x, y, x1, y1) = face[i].astype("int")
@@ -54,3 +54,5 @@ class pipline:
                 cv2.putText(img, 'Female', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
             cv2.imshow(img)
             cv2.waitKey(0)
+            if save_to_dir is not None:
+                cv2.imwrite(os.path.join(save_to_dir, 'result'), img)
