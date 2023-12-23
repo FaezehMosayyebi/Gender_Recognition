@@ -2,8 +2,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 import cv2
 import os
-from face_processes.face_detection import FaceDetection
-from face_processes.landmark_detection import LandmakDetector
+from face_processes.facedetection.face_detection import FaceDetection
+from face_processes.landmarkdetection.landmark_detection import LandmakDetector
 
 class MaskGenerator:
     def __init__ (self, low_threshold, high_threshold, kernel_size):

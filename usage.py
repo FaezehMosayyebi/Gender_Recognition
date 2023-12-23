@@ -1,8 +1,8 @@
 import cv2
 import tensorflow as tf
 import numpy as np
-from face_processes.face_detection import FaceDetection
-from face_processes.landmark_detection import LandmakDetector
+from face_processes.facedetection.face_detection import FaceDetection
+from face_processes.landmarkdetection.landmark_detection import LandmakDetector
 from model import Trainer
 from modelevaluation import ModelEval
 import os
@@ -93,20 +93,32 @@ class pipline:
         cv2.imshow(img)
         cv2.waitKey(0)
 
-    def detect_face_landmarks(self, image_dir, save_to_dir, num_landmark):
+    def detect_face_landmarks(self, image_dir, num_landmark, save_to_dir):
+
+        """
+            Usage of landmark detection class
+            Params:
+                image_dir: Diretion of image
+                num_landmark: the number of landmark that you want to be deteted (5 or 68)
+                save_to_dir: if you want to save the result inter your desired location.
+        """
 
         landmark_detector = LandmakDetector(num_landmark)
 
-        img = cv2.inmread(image_dir)
-        rects = self.face_detector(img)
+        img = cv2.imread(image_dir)
+        rects = self.face_detector.detect(img)
         
         for i in range(len(rects)):
-            coords = landmark_detector(img, rects(i))
-            
+            coords = landmark_detector.detect(img, rects[i])
+            for (x, y) in coords:
+                cv2.circle(img, (int(x), int(y)), 1, (0, 0, 255), -1)
 
+        if save_to_dir is not None:
+            cv2.imwrite(os.path.join(save_to_dir, 'face_detection_result.png'), img)
 
+        cv2.imshow(img)
+        cv2.waitKey(0)
 
-        pass
 
     def generate_masked_faces(self):
         pass
