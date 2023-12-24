@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 from face_processes.facedetection.face_detection import FaceDetection
 from face_processes.landmarkdetection.landmark_detection import LandmakDetector
+from face_processes.maskgenerator import MaskGenerator
 from model import Trainer
 from modelevaluation import ModelEval
 import os
@@ -12,6 +13,7 @@ class pipline:
     def __init__(self, model_dir)->None:
         
         self.face_detector = FaceDetection()
+        self.mask_generator = MaskGenerator()
         if model_dir is not None:
             self.model_dir = model_dir
             if model_dir is not None:
@@ -120,8 +122,30 @@ class pipline:
         cv2.waitKey(0)
 
 
-    def generate_masked_faces(self):
-        pass
+    def generate_masked_faces(self, low_threshold:float, high_threshold:float, kernel_size:int, image_dir:str, save_to_dir:str, flow_from_directory:bool, prefix:str):
+
+        """
+            Usage of masked face generator
+            Params:
+                low_threshold
+                high_threshold
+                kernel_size: The size of the Sobel kernel to be used
+                image_dir: the image directory of the directory of images in flow from directory
+                save_to_dir: The destination directory you want to save results
+                flow_from_directory: whether you want to flow from directory or not
+                prefix: the prefix you want to save you files with in flow from directory
+        """
+
+        if flow_from_directory:
+            self.mask_generator.flow_from_directory(low_threshold, high_threshold, kernel_size, image_dir, save_to_dir, prefix)
+        else:
+            img = cv2.imread(image_dir)
+            masked_face = self.mask_generator.mask_generator(img, low_threshold, high_threshold, kernel_size)
+            if save_to_dir is not None:
+                cv2.imwrite(os.path.join(save_to_dir, 'masked_face.png'), masked_face)
+
+
+        
 
 
 
