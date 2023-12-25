@@ -8,7 +8,7 @@ from model import Trainer
 from modelevaluation import ModelEval
 import os
 
-class pipline:
+class pipeline:
 
     def __init__(self, model_dir)->None:
         
@@ -47,7 +47,7 @@ class pipline:
             evaluator.confusion_matrix()
         
 
-    def run_model(self, img_dir, save_to_dir):
+    def run_model(self, img_dir, save_to_dir, save_path):
 
         img = cv2.imread(img_dir)
         face = self.face_detector(img)
@@ -71,21 +71,22 @@ class pipline:
                 cv2.putText(img, 'Female', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
             cv2.imshow(img)
             cv2.waitKey(0)
-            if save_to_dir is not None:
-                cv2.imwrite(os.path.join(save_to_dir, 'gender_detection_result.png'), img)
+            if save_to_dir:
+                cv2.imwrite(os.path.join(save_path, 'gender_detection_result.png'), img)
 
-    def detect_faces(self, img_dir, save_to_dir, flow_from_dir, prefix):
+    def detect_faces(self, img_dir, save_to_dir, destination_directory, flow_from_dir, prefix):
 
         """
             Usage of face detection class
             Params:
                 img_dir: Diretion of image of the diretory of images when flow_from_directory
-                save_to_dir: if you want to save the result inter your desired location.
+                save_to_dir: do you want to save result?
+                destination_directory: destination directory to save results.
                 flow_from_directory: if you want to flow from directory
                 prefix: the prefix you want to save files in flow_from_directory
         """
         if flow_from_dir:
-            self.face_detector.flow_from_directory(img_dir, save_to_dir, prefix)
+            self.face_detector.flow_from_directory(img_dir, destination_directory, prefix)
         else:
             img = cv2.inmread(img_dir)
             rects = self.face_detector(img)
@@ -93,8 +94,8 @@ class pipline:
             for i in range(len(rects)):
                 cv2.rectangle(img, (rects[i].left(), rects[i].top()), (rects[i].right(), rects[i].bottom()), (255, 0, 0), 2)
 
-            if save_to_dir is not None:
-                cv2.imwrite(os.path.join(save_to_dir, 'face_detection_result.png'), img)
+            if save_to_dir:
+                cv2.imwrite(os.path.join(destination_directory, 'face_detection_result.png'), img)
 
             cv2.imshow(img)
             cv2.waitKey(0)
