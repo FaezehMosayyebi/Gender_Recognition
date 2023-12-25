@@ -100,21 +100,22 @@ class pipeline:
             cv2.imshow(img)
             cv2.waitKey(0)
 
-    def detect_face_landmarks(self, image_dir, num_landmark, save_to_dir, flow_from_directory, prefix):
+    def detect_face_landmarks(self, image_dir, num_landmark, save_to_dir, destination_directory, flow_from_directory, prefix):
 
         """
             Usage of landmark detection class
             Params:
                 image_dir: Diretion of image inf flow from directory the directory containing images
                 num_landmark: the number of landmark that you want to be deteted (5 or 68)
-                save_to_dir: if you want to save the result inter your desired location.
+                save_to_dir: do you want to save result?
+                destination_directory: destination directory to save results.
                 flow_from_directory: if you want to find the landmark of faces of images of a directory
                 prefix: the prefix you want to save images with.
         """
         landmark_detector = LandmakDetector(num_landmark)
 
         if flow_from_directory:
-            landmark_detector.flow_from_directory(image_dir, save_to_dir, prefix)
+            landmark_detector.flow_from_directory(image_dir, destination_directory, prefix)
         else:
             img = cv2.imread(image_dir)
             rects = self.face_detector.detect(img)
@@ -124,8 +125,9 @@ class pipeline:
                 for (x, y) in coords:
                     cv2.circle(img, (int(x), int(y)), 1, (0, 0, 255), -1)
 
-            if save_to_dir is not None:
-                cv2.imwrite(os.path.join(save_to_dir, 'face_detection_result.png'), img)
+            if save_to_dir:
+                if destination_directory is not None:
+                cv2.imwrite(os.path.join(destination_directory, 'face_detection_result.png'), img)
 
             cv2.imshow(img)
             cv2.waitKey(0)
