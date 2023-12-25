@@ -95,7 +95,10 @@ class pipeline:
                 cv2.rectangle(img, (rects[i].left(), rects[i].top()), (rects[i].right(), rects[i].bottom()), (255, 0, 0), 2)
 
             if save_to_dir:
-                cv2.imwrite(os.path.join(destination_directory, 'face_detection_result.png'), img)
+                if destination_directory is not None:
+                    cv2.imwrite(os.path.join(destination_directory, 'face_detection_result.png'), img)
+                else:
+                    cv2.imwrite(img)
 
             cv2.imshow(img)
             cv2.waitKey(0)
@@ -127,7 +130,10 @@ class pipeline:
 
             if save_to_dir:
                 if destination_directory is not None:
-                cv2.imwrite(os.path.join(destination_directory, 'face_detection_result.png'), img)
+                    cv2.imwrite(os.path.join(destination_directory, 'landmark_detection_result.png'), img)
+                else:
+                    cv2.imwrite(img)
+
 
             cv2.imshow(img)
             cv2.waitKey(0)
