@@ -20,11 +20,11 @@ class pipeline:
                 self.model = tf.keras.models.load_model(model_dir)
 
 
-    def train(self, data_dir:dict, model_name:str, batch_size:int, patch_size:(int, int), train_num_epochs:int, tune_num_epochs:int, tune_from:int, lr:float, aug_config:dict, save_to_dir):
+    def train(self, data_dir:dict, model_name:str, batch_size:int, patch_size:(int, int), train_num_epochs:int, tune_num_epochs:int, tune_from:int, lr:float, augmentation:bool, aug_config:dict, save_to_dir:str):
 
         trainer = Trainer(data_dir['training'], data_dir['validation'], batch_size, patch_size)
         trainer.load_data
-        trainer.model(model_name, aug_config)
+        trainer.model(model_name, augmentation, aug_config)
         train_history, self.model = trainer.train(train_num_epochs, lr)
         trainer.plot_train_process(save_to_dir)
         if tune_num_epochs is not None:
@@ -139,7 +139,7 @@ class pipeline:
             cv2.waitKey(0)
 
 
-    def generate_masked_faces(self, low_threshold:float, high_threshold:float, kernel_size:int, image_dir:str, save_to_dir:str, flow_from_directory:bool, prefix:str):
+    def generate_masked_faces(self, low_threshold:float, high_threshold:float, kernel_size:int, image_dir:str, save_to_dir:str, save_directory:str, flow_from_directory:bool, prefix:str):
 
         """
             Usage of masked face generator
@@ -148,18 +148,22 @@ class pipeline:
                 high_threshold
                 kernel_size: The size of the Sobel kernel to be used
                 image_dir: the image directory of the directory of images in flow from directory
-                save_to_dir: The destination directory you want to save results
+                save_to_dir: do you want to save result?
+                save_directory: destination directory to save results.
                 flow_from_directory: whether you want to flow from directory or not
                 prefix: the prefix you want to save you files with in flow from directory
         """
 
         if flow_from_directory:
-            self.mask_generator.flow_from_directory(low_threshold, high_threshold, kernel_size, image_dir, save_to_dir, prefix)
+            self.mask_generator.flow_from_directory(low_threshold, high_threshold, kernel_size, image_dir, save_directory, prefix)
         else:
             img = cv2.imread(image_dir)
             masked_face = self.mask_generator.mask_generator(img, low_threshold, high_threshold, kernel_size)
-            if save_to_dir is not None:
-                cv2.imwrite(os.path.join(save_to_dir, 'masked_face.png'), masked_face)
+            if save_to_dir:
+                if save_directory is not None:
+                    cv2.imwrite(os.path.join(save_directory, 'landmark_detection_result.png'), img)
+                else:
+                    cv2.imwrite(img)
 
 
         

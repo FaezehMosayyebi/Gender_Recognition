@@ -68,7 +68,7 @@ class Trainer():
                 plt.imshow(augmented_image[0] / 255)
                 plt.axis('off')
 
-    def model(self, model_size, aug_config):
+    def model(self, model_size, augmentation, aug_config):
 
         self.base_model = tf.keras.applications.EfficientNetB1(
             include_top=False,
@@ -77,13 +77,15 @@ class Trainer():
 
         self.base_model.trainable = False
 
-        da = self.data_augmentation(aug_config['rotation_factor'], aug_config['translation_factor'], aug_config['flip'], aug_config['contrast_factor'])
+        if augmentation:
+            da = self.data_augmentation(aug_config['rotation_factor'], aug_config['translation_factor'], aug_config['flip'], aug_config['contrast_factor'])
         preprocess_input = tf.keras.applications.efficientnet.preprocess_input
 
 
         #model
         inputs = tf.keras.Input(shape=self.img_size + (3,))
-        x = da(inputs)
+        if augmentation:
+            x = da(inputs)
         x = preprocess_input(x)
         x = self.base_model(x, training=False)
 
@@ -92,13 +94,13 @@ class Trainer():
         x = tf.keras.layers.GlobalAveragePooling2D(name="avg_pool")(x)
         x = tf.keras.layers.BatchNormalization()(x)
 
-        if model_size == 'large':
+        if model_size == 'Large':
             x = tf.keras.layers.Dropout(0.2)(x)
             x = tf.keras.layers.Dense(2048, activation= "relu")(x)
             x = tf.keras.layers.Dropout(0.2)(x)
             x = tf.keras.layers.Dense(1024, activation= "relu")(x)
 
-        elif model_size == 'small':
+        elif model_size == 'Small':
             x = tf.keras.layers.Dropout(0.2)(x)
             x = tf.keras.layers.Dense(256, activation= "relu")(x)
 
