@@ -86,7 +86,9 @@ class Trainer():
         inputs = tf.keras.Input(shape=self.img_size + (3,))
         if augmentation:
             x = da(inputs)
-        x = preprocess_input(x)
+            x = preprocess_input(x)
+        else:
+            x = preprocess_input(inputs)
         x = self.base_model(x, training=False)
 
         #top model

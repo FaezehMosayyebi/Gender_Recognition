@@ -41,7 +41,7 @@ class LandmakDetector(object):
   
   def flow_from_directory(self, src_dir, dest_dir, prefix):
 
-    for file in os.listdir("src_dir"): 
+    for file in os.listdir(src_dir): 
         if file.endswith(".jpg"): 
 
             img = cv2.imread(os.path.join(src_dir, file))

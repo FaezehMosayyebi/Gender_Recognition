@@ -15,15 +15,13 @@ class pipeline:
         self.face_detector = FaceDetection()
         self.mask_generator = MaskGenerator()
         if model_dir is not None:
-            self.model_dir = model_dir
-            if model_dir is not None:
-                self.model = tf.keras.models.load_model(model_dir)
+            self.model = tf.keras.models.load_model(model_dir)
 
 
     def train(self, data_dir:dict, model_name:str, batch_size:int, patch_size:(int, int), train_num_epochs:int, tune_num_epochs:int, tune_from:int, lr:float, augmentation:bool, aug_config:dict, save_to_dir:str):
 
         trainer = Trainer(data_dir['training'], data_dir['validation'], batch_size, patch_size)
-        trainer.load_data
+        trainer.load_data()
         trainer.model(model_name, augmentation, aug_config)
         train_history, self.model = trainer.train(train_num_epochs, lr)
         trainer.plot_train_process(save_to_dir)
@@ -50,14 +48,14 @@ class pipeline:
     def run_model(self, img_dir, save_to_dir, save_path):
 
         img = cv2.imread(img_dir)
-        face = self.face_detector(img)
+        face = self.face_detector.detect(img)
         for i in range(len(face)):
             x = face[i].left()
             y = face[i].top()
             x1 = face[i].right()
             y1 = face[i].bottom()
             image = img[y:y1, x:x1]
-            image = cv2.resize(image, (224,224))
+            image = cv2.resize(image, (240,240))
             image = tf.keras.applications.efficientnet.preprocess_input(image)
             image = tf.expand_dims(image, axis=0)
             predict= self.model.predict(image)
@@ -88,8 +86,8 @@ class pipeline:
         if flow_from_dir:
             self.face_detector.flow_from_directory(img_dir, destination_directory, prefix)
         else:
-            img = cv2.inmread(img_dir)
-            rects = self.face_detector(img)
+            img = cv2.imread(img_dir)
+            rects = self.face_detector.detect(img)
 
             for i in range(len(rects)):
                 cv2.rectangle(img, (rects[i].left(), rects[i].top()), (rects[i].right(), rects[i].bottom()), (255, 0, 0), 2)

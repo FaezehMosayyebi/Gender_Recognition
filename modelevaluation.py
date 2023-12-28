@@ -9,14 +9,13 @@ import cv2
 
 class ModelEval:
     
-    def __init__(self, testdata_dir, batch_size, patch_size, model):
+    def __init__(self, testdata_dir, patch_size, model):
 
         self.test_data_dir = testdata_dir
         if type(model) == str:
             self.model_dir = model
         else:
             self.model = model
-        self.batch_size = batch_size
         self.patch_size = patch_size
 
     def load_data(self):
@@ -25,7 +24,6 @@ class ModelEval:
             self.test_dataset = image_dataset_from_directory(self.test_data_dir,
                                                 label_mode="categorical",
                                                 shuffle=True,
-                                                batch_size=self.batch_size,
                                                 image_size=self.patch_size)
         
             class_names = self.test_dataset.class_names
@@ -53,11 +51,11 @@ class ModelEval:
         female_data = imread_collection(self.test_data_dir +'/female/*.jpg')
 
         true_male = 0
-        true_femal = 0
+        true_female = 0
 
         for i in range (len(male_data)):
         
-            img = cv2.resize(male_data[i], (224,224))
+            img = cv2.resize(male_data[i], (240,240))
             img = tf.keras.applications.efficientnet.preprocess_input(img)
             img = tf.expand_dims(img, axis=0)
 
@@ -70,7 +68,7 @@ class ModelEval:
 
         for i in range (len(female_data)):
         
-            img = cv2.resize(female_data[i], (224,224))
+            img = cv2.resize(female_data[i], (240,240))
             img = tf.keras.applications.efficientnet.preprocess_input(img)
             img = tf.expand_dims(img, axis=0)
 
