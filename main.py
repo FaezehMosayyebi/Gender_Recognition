@@ -70,7 +70,10 @@ class pipeline:
             cv2.imshow(img)
             cv2.waitKey(0)
             if save_to_dir:
-                cv2.imwrite(os.path.join(save_path, 'gender_detection_result.png'), img)
+                if save_path is not None:
+                    cv2.imwrite(os.path.join(save_path, 'gender_detection_result.png'), img)
+                else:
+                    cv2.imwrite('gender_detection_result.png', img)
 
     def detect_faces(self, img_dir, save_to_dir, destination_directory, flow_from_dir, prefix):
 
@@ -96,7 +99,7 @@ class pipeline:
                 if destination_directory is not None:
                     cv2.imwrite(os.path.join(destination_directory, 'face_detection_result.png'), img)
                 else:
-                    cv2.imwrite(img)
+                    cv2.imwrite('face_detection_result.png', img)
 
             cv2.imshow(img)
             cv2.waitKey(0)
@@ -130,14 +133,13 @@ class pipeline:
                 if destination_directory is not None:
                     cv2.imwrite(os.path.join(destination_directory, 'landmark_detection_result.png'), img)
                 else:
-                    cv2.imwrite(img)
-
+                    cv2.imwrite('landmark_detection_result.png', img)
 
             cv2.imshow(img)
             cv2.waitKey(0)
 
 
-    def generate_masked_faces(self, low_threshold:float, high_threshold:float, kernel_size:int, image_dir:str, save_to_dir:str, save_directory:str, flow_from_directory:bool, prefix:str):
+    def generate_masked_faces(self, low_threshold:float, high_threshold:float, kernel_size:int, image_dir:str, save_to_dir:bool, save_directory:str, flow_from_directory:bool, prefix:str):
 
         """
             Usage of masked face generator
@@ -159,9 +161,12 @@ class pipeline:
             masked_face = self.mask_generator.mask_generator(img, low_threshold, high_threshold, kernel_size)
             if save_to_dir:
                 if save_directory is not None:
-                    cv2.imwrite(os.path.join(save_directory, 'landmark_detection_result.png'), img)
+                    cv2.imwrite(os.path.join(save_directory, 'masked_face.png'), masked_face)
                 else:
-                    cv2.imwrite(img)
+                    cv2.imwrite('masked_face.png', masked_face)
+
+            cv2.imshow(masked_face)
+            cv2.waitKey(0)
 
 
         
