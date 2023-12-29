@@ -7,6 +7,7 @@ import cv2
 import os
 from face_processes.facedetection.face_detection import FaceDetection
 from face_processes.landmarkdetection.landmark_detection import LandmakDetector
+from utils import *
 
 class MaskGenerator:
     def __init__ (self):
@@ -39,13 +40,15 @@ class MaskGenerator:
     
     def flow_from_directory(self, low_threshold, high_threshold, kernel_size, src_dir, dest_dir, prefix):
 
-        for file in os.listdir(src_dir): 
-            if file.endswith(".jpg"): 
+        if path_valiadtor(src_dir):
+            directory_maker(dest_dir)
+            for file in os.listdir(src_dir): 
+                if file.endswith(".jpg"): 
 
-                img = cv2.imread(os.path.join(src_dir, file))
+                    img = cv2.imread(os.path.join(src_dir, file))
 
-                if img is not None:
-                    masked_image = self.mask_generator(img, low_threshold, high_threshold, kernel_size)
-                    if prefix is not None:
-                        file = prefix + file
-                    cv2.imwrite(os.path.join(dest_dir, file), masked_image)
+                    if img is not None:
+                        masked_image = self.mask_generator(img, low_threshold, high_threshold, kernel_size)
+                        if prefix is not None:
+                            file = prefix + file
+                        cv2.imwrite(os.path.join(dest_dir, file), masked_image)

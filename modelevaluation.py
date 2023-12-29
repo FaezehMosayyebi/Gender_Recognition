@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 from mlxtend.plotting import plot_confusion_matrix
 from skimage.io import imread_collection
+from utils import *
 
 import numpy as np
 import cv2
@@ -9,16 +10,18 @@ import cv2
 
 class ModelEval:
     
-    def __init__(self, testdata_dir, patch_size, model):
+    def __init__(self, testdata_dir:str, patch_size:(int, int), model) -> None:
 
-        self.test_data_dir = testdata_dir
+        if path_valiadtor(testdata_dir):
+            self.test_data_dir = testdata_dir
+
         if type(model) == str:
             self.model_dir = model
         else:
             self.model = model
         self.patch_size = patch_size
 
-    def load_data(self):
+    def load_data(self) -> None:
         
         try:
             self.test_dataset = image_dataset_from_directory(self.test_data_dir,
@@ -33,19 +36,19 @@ class ModelEval:
         except Exception as e:
             print('Data loading was unsuccessful. Check the following error')
             print(f'Error: {e}')
-            exit(0)
+            exit(1)
 
-    def load_model(self):
+    def load_model(self) -> None:
         self.model = tf.keras.models.load_model(self.model_dir)
 
-    def evaluat(self):
+    def evaluat(self) -> None:
         loss, accuracy = self.model.evaluate(self.test_dataset)
 
         print(f'Model evaluated successfully.')
         print(f'Test accuracy = {accuracy}')
         print(f'Test loss = {loss}')
 
-    def confusion_matrix(self):
+    def confusion_matrix(self) -> None:
 
         male_data = imread_collection(self.test_data_dir +'/male/*.jpg')
         female_data = imread_collection(self.test_data_dir +'/female/*.jpg')

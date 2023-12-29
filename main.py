@@ -6,6 +6,7 @@ from face_processes.landmarkdetection.landmark_detection import LandmakDetector
 from face_processes.maskgenerator import MaskGenerator
 from model import Trainer
 from modelevaluation import ModelEval
+from utils import *
 import os
 
 class pipeline:
@@ -71,6 +72,7 @@ class pipeline:
             cv2.waitKey(0)
             if save_to_dir:
                 if save_path is not None:
+                    directory_maker(save_path)
                     cv2.imwrite(os.path.join(save_path, 'gender_detection_result.png'), img)
                 else:
                     cv2.imwrite('gender_detection_result.png', img)
@@ -97,6 +99,7 @@ class pipeline:
 
             if save_to_dir:
                 if destination_directory is not None:
+                    directory_maker(destination_directory)
                     cv2.imwrite(os.path.join(destination_directory, 'face_detection_result.png'), img)
                 else:
                     cv2.imwrite('face_detection_result.png', img)
@@ -131,6 +134,7 @@ class pipeline:
 
             if save_to_dir:
                 if destination_directory is not None:
+                    directory_maker(destination_directory)
                     cv2.imwrite(os.path.join(destination_directory, 'landmark_detection_result.png'), img)
                 else:
                     cv2.imwrite('landmark_detection_result.png', img)
@@ -161,6 +165,7 @@ class pipeline:
             masked_face = self.mask_generator.mask_generator(img, low_threshold, high_threshold, kernel_size)
             if save_to_dir:
                 if save_directory is not None:
+                    directory_maker(save_directory)
                     cv2.imwrite(os.path.join(save_directory, 'masked_face.png'), masked_face)
                 else:
                     cv2.imwrite('masked_face.png', masked_face)

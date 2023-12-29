@@ -3,19 +3,29 @@ import tensorflow as tf
 from tensorflow.keras.applications import EfficientNetB1
 from tensorflow.keras import regularizers
 import matplotlib.pyplot as plt
+from utils import *
 import pandas as pd
 import os
 
 class Trainer():
-    def __init__(self, train_data_dir, validation_data_dir, batch_size, img_size) -> None:
+    def __init__(self, train_data_dir:str, validation_data_dir:str, batch_size:int, img_size:(int, int)) -> None:
 
-        self.train_dir = train_data_dir
-        self.valid_dir = validation_data_dir
+        if path_valiadtor(train_data_dir) and path_valiadtor(validation_data_dir):
 
-        self.batch_size = batch_size
-        self.img_size = img_size
+            self.train_dir = train_data_dir
+            self.valid_dir = validation_data_dir
 
-    def load_data(self):
+        if batch_size != 0:
+            self.batch_size = batch_size
+        else:
+            batch_size = 16
+        
+        if img_size[0] != 0 and img_size[1] != 0:
+            self.img_size = img_size
+        else:
+            self.img_size = (240, 240)
+
+    def load_data(self) -> None:
         try:
             self.train_dataset = image_dataset_from_directory(self.train_dir,
                                                 label_mode="categorical",
@@ -40,7 +50,7 @@ class Trainer():
             print('Data loading was unsuccessful. Check the following error')
             print(f'Error: {e}')
             exit(0)
-    def data_augmentation(self, rotation_factor, translation_factor, flip, contrast_factor):
+    def data_augmentation(self, rotation_factor:float, translation_factor:(float, float), flip:str, contrast_factor:float):
 
         data_augmentation = tf.keras.Sequential()
 
@@ -58,7 +68,7 @@ class Trainer():
 
         return data_augmentation
     
-    def augment_plotter(self, aug_config):
+    def augment_plotter(self, aug_config:dict) -> None:
         for image, _ in self.train_dataset.take(1):
             plt.figure(figsize=(10, 10))
             first_image = image[0]
@@ -68,7 +78,7 @@ class Trainer():
                 plt.imshow(augmented_image[0] / 255)
                 plt.axis('off')
 
-    def model(self, model_size, augmentation, aug_config):
+    def model(self, model_size:str, augmentation:bool, aug_config:dict) -> None:
 
         self.base_model = tf.keras.applications.EfficientNetB1(
             include_top=False,
@@ -111,7 +121,7 @@ class Trainer():
 
         self.model = tf.keras.Model(inputs, outputs)
     
-    def train(self, num_epochs, learning_rate):
+    def train(self, num_epochs:int, learning_rate:float):
 
         self.train_num_epochs = num_epochs
         self.learning_rate = learning_rate
@@ -126,7 +136,7 @@ class Trainer():
         
         return self.train_history, self.model
     
-    def fine_tune(self, tune_from, num_epochs):
+    def fine_tune(self, tune_from:int, num_epochs:int):
 
         self.base_model.trainable = True
         num_layers = len(self.base_model.layers)
@@ -147,7 +157,9 @@ class Trainer():
         
         return self.history_fine, self.model
 
-    def plot_train_process(self, save_to_dir):
+    def plot_train_process(self, save_to_dir:str) -> None:
+
+        directory_maker(save_to_dir)
 
         acc = self.train_history.history['accuracy']
         val_acc = self.train_history.history['val_accuracy']
@@ -176,7 +188,10 @@ class Trainer():
         if save_to_dir is not None:
             plt.savefig(os.path.join(save_to_dir, 'train_plots.png'))
 
-    def plot_whole_process(self, save_to_dir):
+    def plot_whole_process(self, save_to:str) -> None:
+
+        directory_maker(save_to)
+
         acc = self.train_history.history['accuracy'] + self.history_fine.history['accuracy']
         val_acc = self.train_history.history['val_accuracy'] + self.history_fine.history['val_accuracy']
 
@@ -203,17 +218,21 @@ class Trainer():
         plt.title('Training and Validation Loss')
         plt.xlabel('epoch')
         plt.show()
-        if save_to_dir is not None:
-            plt.savefig(os.path.join(save_to_dir, 'whol_process_plots.png'))
+        if save_to is not None:
+            plt.savefig(os.path.join(save_to, 'whol_process_plots.png'))
 
-    def save_model(self, dir):
-        self.model.save(os.path.join(dir, 'genderdetector.h5'))
+    def save_model(self, save_to:str) -> None:
 
-    def save_history(self, history, dir):
+        directory_maker(save_to)
+        self.model.save(os.path.join(save_to, 'genderdetector.h5'))
+
+    def save_history(self, history, save_to:str) -> None:
+
+        directory_maker(save_to)
 
         # convert the history.history dict to a pandas DataFrame:
         hist_df = pd.DataFrame(history.history)
 
         # save to csv:
-        with open(os.path.join(dir, 'history_fine.csv'), mode='w') as f:
+        with open(os.path.join(save_to, 'history_fine.csv'), mode='w') as f:
             hist_df.to_csv(f)

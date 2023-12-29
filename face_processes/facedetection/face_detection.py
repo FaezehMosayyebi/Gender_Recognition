@@ -5,6 +5,7 @@ import numpy as np
 import dlib
 import cv2
 import os
+from utils import *
 
 class FaceDetection(object):
   def __init__(self) -> None:
@@ -37,17 +38,19 @@ class FaceDetection(object):
 
     return rects
   
-  def flow_from_directory(self, src_dir, dest_dir, prefix):
+  def flow_from_directory(self, src_dir:str, dest_dir:str, prefix:str) -> None:
 
-    for file in os.listdir(src_dir): 
-        if file.endswith(".jpg"): 
-            
-            img = cv2.imread(os.path.join(src_dir, file))
+    if path_valiadtor(src_dir):
+      directory_maker(dest_dir)
+      for file in os.listdir(src_dir): 
+          if file.endswith(".jpg"): 
+              
+              img = cv2.imread(os.path.join(src_dir, file))
 
-            if img is not None:
-                rects = self.detect(img)
-                for i in range(len(rects)):
-                   cv2.rectangle(img, (rects[i].left(), rects[i].top()), (rects[i].right(), rects[i].bottom()), (255, 0, 0), 2)
-                if prefix is not None:
-                    file = prefix + file
-                cv2.imwrite(os.path.join(dest_dir, file), img)
+              if img is not None:
+                  rects = self.detect(img)
+                  for i in range(len(rects)):
+                    cv2.rectangle(img, (rects[i].left(), rects[i].top()), (rects[i].right(), rects[i].bottom()), (255, 0, 0), 2)
+                  if prefix is not None:
+                      file = prefix + file
+                  cv2.imwrite(os.path.join(dest_dir, file), img)

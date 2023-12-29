@@ -1,8 +1,12 @@
 import shutil
 import os
 import pandas as pd
+from utils import *
 
 def celeba_preparation(data_dir, config_dir, output_dir) -> None:
+
+    path_valiadtor(data_dir)
+    directory_maker(output_dir)
 
     if not os.path.isdir(os.path.join(output_dir, 'male')):
         os.mkdir(os.path.join(output_dir, 'male'))

@@ -1,11 +1,17 @@
 import os
-import sys
 from os import rename
 import requests
 import shutil
+from utils import *
+
 
 
 def LFW_preprocessor(src_dir, male_folder, female_folder):
+
+    path_valiadtor(src_dir)
+    directory_maker(male_folder)
+    directory_maker(female_folder)
+    
     fileList = []
     fileSize = 0
     folderCount = 0
