@@ -18,7 +18,25 @@ advancement over prior endeavors, underscoring the efficiency and robustness of 
 
 [Link to paper](https://link.springer.com/article/10.1007/s41870-023-01565-4)
 
+# Output
+### Generating Masked Faces:
+
+<div align="center" style="margin: 0">
+
+![masked_faces](media/1.png)
+</div>
+
+<br>
+
+### Geneder Detection:
+
+<div align="center" style="margin: 0">
+
+![gender_detection](media/2.png)
+</div>
+
 # How to use codes:
+
 
 1. Clone codes.
 ```
