@@ -16,6 +16,12 @@ class FaceDetection(object):
     self.face_detection_model = cv2.dnn.readNetFromCaffe(configFile, face_detection_model_prams)
 
   def detect(self, image):
+    """
+    Detecting all faces in an image:
+    params:
+      input: image
+      output: list of rects of faces in an image.
+    """
 
     h, w = image.shape[:2]
     rects = []
@@ -39,6 +45,14 @@ class FaceDetection(object):
     return rects
   
   def flow_from_directory(self, src_dir:str, dest_dir:str, prefix:str) -> None:
+
+    """
+    Reads all the images of a directory and detects all faces in them.
+    params:
+      src_dir: The source directory to read images.
+      src_dir: The destination directory to save images.
+      prefix: The prefix to save images with.
+    """
 
     if path_valiadtor(src_dir):
       directory_maker(dest_dir)

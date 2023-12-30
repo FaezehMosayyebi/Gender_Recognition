@@ -21,6 +21,22 @@ class pipeline:
 
     def train(self, data_dir:dict, model_name:str, batch_size:int, patch_size:(int, int), train_num_epochs:int, tune_num_epochs:int, tune_from:int, lr:float, augmentation:bool, aug_config:dict, save_to_dir:str):
 
+        """
+            Trains the models proposed in the paper:
+            Params:
+                data_dir: a dictionary containes 'training': train dataset, 'validation': validation dataset
+                model_name: 'small' or 'larg'
+                batch_size
+                patch_size: image size
+                train_num_epochs: number of epochs in train process
+                tune_num_epochs: number of epochs in tune process
+                tune_from: the bottom of the layers you want to fine tune
+                lr: learning rate
+                augmentation: do you want to augment data?
+                aug_config: augentation configuration 
+                save_to_dir: the directory to save result
+        """
+
         trainer = Trainer(data_dir['training'], data_dir['validation'], batch_size, patch_size)
         trainer.load_data()
         trainer.model(model_name, augmentation, aug_config)
@@ -37,9 +53,16 @@ class pipeline:
                 trainer.save_history(tune_history, save_to_dir)
 
 
-    def evaluate_model(self, testdata_dir, batch_size, patch_size, confusion_matrix):
+    def evaluate_model(self, testdata_dir:str, patch_size:(int, int), confusion_matrix:bool) -> None:
+        """
+            evaluates a trained model with a test dataset
+            Params:
+                testdata_dir: the directory of test data
+                patch_size: the size of each image
+                confusion_matrix: Do you want a confusion matrix?
+        """
 
-        evaluator = ModelEval(testdata_dir, batch_size, patch_size, self.model)
+        evaluator = ModelEval(testdata_dir, patch_size, self.model)
         evaluator.load_data()
         evaluator.evaluat()
         if confusion_matrix:
@@ -47,6 +70,14 @@ class pipeline:
         
 
     def run_model(self, img_dir, save_to_dir, save_path):
+
+        """
+            Uses a trained network to detecet the gender of people in an image
+            Params:
+                img_dir: Diretion of image
+                save_to_dir: do you want to save result?
+                save_path: the directory to save results there
+        """
 
         img = cv2.imread(img_dir)
         face = self.face_detector.detect(img)
@@ -82,7 +113,7 @@ class pipeline:
         """
             Usage of face detection class
             Params:
-                img_dir: Diretion of image of the diretory of images when flow_from_directory
+                img_dir: Diretion of image or the diretory of images when flow_from_directory
                 save_to_dir: do you want to save result?
                 destination_directory: destination directory to save results.
                 flow_from_directory: if you want to flow from directory
@@ -112,7 +143,7 @@ class pipeline:
         """
             Usage of landmark detection class
             Params:
-                image_dir: Diretion of image inf flow from directory the directory containing images
+                image_dir: Diretion of image if flow from directory the directory containing images
                 num_landmark: the number of landmark that you want to be deteted (5 or 68)
                 save_to_dir: do you want to save result?
                 destination_directory: destination directory to save results.

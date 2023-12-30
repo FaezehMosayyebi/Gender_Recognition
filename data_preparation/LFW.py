@@ -1,3 +1,6 @@
+# author: Faezeh Mosayyebi
+# Spliting LFW dataset based on the name of the person in each image.
+
 import os
 from os import rename
 import requests

@@ -1,3 +1,6 @@
+# author: Faezeh Mosayyebi
+# Spliting CelebA dataset based on the config file.
+
 import shutil
 import os
 import pandas as pd

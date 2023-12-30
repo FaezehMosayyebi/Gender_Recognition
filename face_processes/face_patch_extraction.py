@@ -1,3 +1,6 @@
+# author: Faezeh Mosayyebi
+# extrating face patches
+
 import numpy as np
 import cv2
 from PIL import Image, ImageDraw

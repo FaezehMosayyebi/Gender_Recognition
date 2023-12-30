@@ -1,3 +1,6 @@
+# author: Faezeh Mosayyebi
+# aligning face
+
 from numpy import np
 from PIL import Image
 from face_processes.facedetection.face_detection import FaceDetection

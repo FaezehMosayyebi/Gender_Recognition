@@ -17,6 +17,15 @@ class MaskGenerator:
 
     def mask_generator(self, img, low_threshold, high_threshold, kernel_size):
 
+        """
+        Masks all faces in them.
+        params:
+        img: image
+        low_threshold: for poisson image edditing
+        high_threshold: for poisson image edditing
+        kernel_size: kernel size of sobel filter
+        """
+        
         rects = self.face_detector.detect(img)
 
         for i in range(len(rects)):
@@ -39,6 +48,17 @@ class MaskGenerator:
         return img
     
     def flow_from_directory(self, low_threshold, high_threshold, kernel_size, src_dir, dest_dir, prefix):
+
+        """
+        Reads all the images of a directory and masks all faces in them.
+        params:
+        low_threshold: for poisson image edditing
+        high_threshold: for poisson image edditing
+        kernel_size: kernel size of sobel filter
+        src_dir: The source directory to read images.
+        src_dir: The destination directory to save images.
+        prefix: The prefix to save images with.
+        """
 
         if path_valiadtor(src_dir):
             directory_maker(dest_dir)

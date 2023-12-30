@@ -35,12 +35,30 @@ class LandmakDetector(object):
   
   def detect(self, image, rect):
 
+    """
+    Detects all landmarks of a deteted face.
+    params:
+      input:
+        image
+        rect of detected faces in the image
+      output:
+        coords of the landmarks of a face.
+    """
+
     landmarks = self.landmark_predictor(image, rect)
     coords = self.shape_to_np(landmarks, self.landmark_number)
 
     return coords
   
   def flow_from_directory(self, src_dir:str, dest_dir:str, prefix:str) -> None:
+
+    """
+    Reads all the images of a directory and detects landmarks of all faces in them.
+    params:
+      src_dir: The source directory to read images.
+      src_dir: The destination directory to save images.
+      prefix: The prefix to save images with.
+    """
 
     if path_valiadtor(src_dir):
       directory_maker(dest_dir)
