@@ -3,9 +3,9 @@ import tensorflow as tf
 from tensorflow.keras.applications import EfficientNetB1
 from tensorflow.keras import regularizers
 import matplotlib.pyplot as plt
-from utils import *
 import pandas as pd
 import os
+from utils import *
 
 class Trainer():
     def __init__(self, train_data_dir:str, validation_data_dir:str, batch_size:int, img_size:(int, int)) -> None:
